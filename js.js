@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tCell,
         [up, right, down, left, start, restart] = document.querySelectorAll('button'),
         gameState,
-        currentMove = moveRight;
+        currentMove = moveRight,
+        gameSpeed = 300;
 
     const BODY = 'snakeBody',
         HEAD = 'snakeHead',
@@ -42,23 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxRow = matrix.length,
         maxCell = matrix[0].length;
 
-    let currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
+    let currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2),135126);
 
     start.addEventListener('click', () => {
         gameState = setInterval(() => {
 
-            if (currentPosition.nextEl.classList.contains(FOOD)) {
-
-                currentPosition.nextEl.classList.remove(FOOD);
-
-                currentPosition.body.push(currentPosition.nextEl);
-
-                pointFood();
+            if (endGame()) {
+                clearInterval(gameState);
             }
 
-            currentPosition = currentMove(currentPosition);
+            else {
+                if (currentPosition.nextEl.classList.contains(FOOD)) {
 
-        }, 300);
+                    currentPosition.nextEl.classList.remove(FOOD);
+    
+                    currentPosition.body.push(currentPosition.nextEl);
+    
+                    pointFood();
+                }
+    
+                currentPosition = currentMove(currentPosition);
+            }
+
+        }, gameSpeed);
+        
         pointFood();
     });
 
@@ -215,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // нарисовать змейку
-    function pointSnake(row = 5, cell = 5) {
+    function pointSnake(row = 5, cell = 5, count = 3) {
 
         cell = (cell < 2) ? 2 :
             (cell > maxCell) ? maxCell - 2 :
@@ -233,14 +241,26 @@ document.addEventListener('DOMContentLoaded', () => {
             body: [],
         };
 
-        current.body.push(
-            matrix[row][cell - 4], //удалить
 
-            matrix[row][cell - 3], // удалить
+        if (count > Math.ceil(maxCell/2)) {
+            count = Math.ceil((maxCell/2)-1);
+        }
 
-            matrix[row][cell - 2],
-            matrix[row][cell - 1],
-        );
+        do {
+            for(let i = 1; i <= count; i++) {
+                current.body.unshift(matrix[row][cell-i]);
+            }
+        } while (false);
+
+
+        // current.body.push(
+        //     matrix[row][cell - 4], //удалить
+
+        //     matrix[row][cell - 3], // удалить
+
+        //     matrix[row][cell - 2],
+        //     matrix[row][cell - 1],
+        // );
 
         current.body.forEach(el => el.classList.add(BODY));
         current.head.classList.add(HEAD);
@@ -279,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return arr;
     }
 
-
+    // нарисовать еду для змейки
     function pointFood() {
         let row = Math.ceil(Math.random() * (maxRow - 1));
         let cell = Math.ceil(Math.random() * (maxCell - 1));
@@ -291,5 +311,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         matrix[row][cell].classList.add('food');
+    }
+
+    function endGame() {
+        if (currentPosition.head.classList.contains(BODY) &&
+            currentPosition.head.classList.contains(HEAD)
+        ) {
+            return true;
+        }
+        return false;
     }
 });
