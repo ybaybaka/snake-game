@@ -46,8 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     start.addEventListener('click', () => {
         gameState = setInterval(() => {
+
+            if (currentPosition.nextEl.classList.contains(FOOD)) {
+
+                currentPosition.nextEl.classList.remove(FOOD);
+
+                currentPosition.body.push(currentPosition.nextEl);
+
+                pointFood();
+            }
+
             currentPosition = currentMove(currentPosition);
-        }, 500);
+
+        }, 300);
+        pointFood();
     });
 
     restart.addEventListener('click', () => {
@@ -268,10 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-
     function pointFood() {
-        let row = Math.ceil(Math.random() * maxRow - 1);
-        let cell = Math.ceil(Math.random() * maxCell - 1);
+        let row = Math.ceil(Math.random() * (maxRow - 1));
+        let cell = Math.ceil(Math.random() * (maxCell - 1));
 
         if (matrix[row][cell].classList.contains(BODY) ||
             matrix[row][cell].classList.contains(HEAD)
