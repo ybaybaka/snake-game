@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(testGame);
 
         testGame = setInterval(()=>{
-            currentPosition = moveUp(currentPosition);
+            currentPosition = moveDown(currentPosition);
         }, 100);
     }, 1700);
 
@@ -55,6 +55,35 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(testGame);
     }, 3200);
 
+
+    function moveDown(current) {
+        let refresh = Object.assign({},current);
+       
+        
+
+        if (refresh.rowI > maxRow - 2) {
+            refresh.rowI = -1;
+        }       
+        
+        refresh.body.push(refresh.head);
+        refresh.body[0].classList.remove('snakeBody');
+
+        refresh.body.shift();
+
+        refresh.body.forEach(el=>{
+            el.classList.add('snakeBody');
+            el.classList.remove('snakeHead');
+        });
+
+        refresh.nextEl = matrix[refresh.rowI+1][refresh.cellI];
+
+        refresh.head = refresh.nextEl;
+        refresh.head.classList.add('snakeHead');
+
+        refresh.rowI++;
+
+        return refresh;
+    }
 
     function moveUp(current) {
         let refresh = Object.assign({},current);
