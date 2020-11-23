@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         
 
-        if (refresh.rowI < 0) {
-            refresh.rowI = -1;
+        if (refresh.rowI < 1) {
+            refresh.rowI = maxRow;
         }       
         
         refresh.body.push(refresh.head);
