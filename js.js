@@ -1,13 +1,19 @@
+"use strict";
+
 document.addEventListener('DOMContentLoaded', () => {
+
     let table = document.createElement('table'),
         playground = document.querySelector('.playground'),
-        numForSquare = 10,
+        numForSquare = 20,
         tRow = addRow(numForSquare),
         tCell,
         [up, right, down, left, start, restart] = document.querySelectorAll('button'),
         gameState,
         currentMove = moveRight;
 
+    const BODY = 'snakeBody',
+        HEAD = 'snakeHead',
+        FOOD = 'food';
 
     tRow.forEach((el) => { // заполнить <table> десятью <tr> 
         tCell = addCell(numForSquare);
@@ -23,11 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tableTd = document.querySelectorAll('td'),
         matrix = makeMatrixArr(numForSquare),
-        tableTdArr = Array.from(tableTd); //формируем массив из псевдомассива
+        tableTdArr = Array.from(tableTd);
 
 
-
-    for (let out = 0; out < numForSquare; out++) { //извлекаем <td> из массива и заполняем матрицу
+    // извлекаем <td> из массива и заполняем матрицу
+    for (let out = 0; out < numForSquare; out++) {
         for (let inn = 0; inn < numForSquare; inn++) {
             matrix[out][inn] = tableTdArr.shift();
         }
@@ -46,9 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     restart.addEventListener('click', () => {
 
-        tableTd.forEach(el=>{
-            el.classList.remove('snakeBody', 'snakeHead');
+        tableTd.forEach(el => {
+            el.classList.remove(BODY, HEAD);
         });
+
         clearInterval(gameState);
         currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
         currentMove = moveRight;
@@ -80,6 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+    // движения
+
     function moveLeft(current) {
         let refresh = Object.assign({}, current);
 
@@ -88,19 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         refresh.body.push(refresh.head);
-        refresh.body[0].classList.remove('snakeBody');
+        refresh.body[0].classList.remove(BODY);
 
         refresh.body.shift();
 
         refresh.body.forEach(el => {
-            el.classList.add('snakeBody');
-            el.classList.remove('snakeHead');
+            el.classList.add(BODY);
+            el.classList.remove(HEAD);
         });
 
         refresh.nextEl = matrix[refresh.rowI][refresh.cellI - 1];
 
         refresh.head = refresh.nextEl;
-        refresh.head.classList.add('snakeHead');
+        refresh.head.classList.add(HEAD);
 
         refresh.cellI--;
 
@@ -115,19 +125,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         refresh.body.push(refresh.head);
-        refresh.body[0].classList.remove('snakeBody');
+        refresh.body[0].classList.remove(BODY);
 
         refresh.body.shift();
 
         refresh.body.forEach(el => {
-            el.classList.add('snakeBody');
-            el.classList.remove('snakeHead');
+            el.classList.add(BODY);
+            el.classList.remove(HEAD);
         });
 
         refresh.nextEl = matrix[refresh.rowI + 1][refresh.cellI];
 
         refresh.head = refresh.nextEl;
-        refresh.head.classList.add('snakeHead');
+        refresh.head.classList.add(HEAD);
 
         refresh.rowI++;
 
@@ -144,19 +154,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         refresh.body.push(refresh.head);
-        refresh.body[0].classList.remove('snakeBody');
+        refresh.body[0].classList.remove(BODY);
 
         refresh.body.shift();
 
         refresh.body.forEach(el => {
-            el.classList.add('snakeBody');
-            el.classList.remove('snakeHead');
+            el.classList.add(BODY);
+            el.classList.remove(HEAD);
         });
 
         refresh.nextEl = matrix[refresh.rowI - 1][refresh.cellI];
 
         refresh.head = refresh.nextEl;
-        refresh.head.classList.add('snakeHead');
+        refresh.head.classList.add(HEAD);
 
 
         refresh.rowI--;
@@ -172,25 +182,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         refresh.body.push(refresh.head);
-        refresh.body[0].classList.remove('snakeBody');
+        refresh.body[0].classList.remove(BODY);
 
         refresh.body.shift();
 
         refresh.body.forEach(el => {
-            el.classList.add('snakeBody');
-            el.classList.remove('snakeHead');
+            el.classList.add(BODY);
+            el.classList.remove(HEAD);
         });
 
         refresh.nextEl = matrix[refresh.rowI][refresh.cellI + 1];
 
         refresh.head = refresh.nextEl;
-        refresh.head.classList.add('snakeHead');
+        refresh.head.classList.add(HEAD);
 
         refresh.cellI++;
 
         return refresh;
     }
 
+
+    // нарисовать змейку
     function pointSnake(row = 5, cell = 5) {
 
         cell = (cell < 2) ? 2 :
@@ -218,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
             matrix[row][cell - 1],
         );
 
-        current.body.forEach(el => el.classList.add('snakeBody'));
-        current.head.classList.add('snakeHead');
+        current.body.forEach(el => el.classList.add(BODY));
+        current.head.classList.add(HEAD);
 
 
 
@@ -253,5 +265,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return arr;
+    }
+
+
+
+    function pointFood() {
+        let row = Math.ceil(Math.random() * maxRow - 1);
+        let cell = Math.ceil(Math.random() * maxCell - 1);
+
+        if (matrix[row][cell].classList.contains(BODY) ||
+            matrix[row][cell].classList.contains(HEAD)
+        ) {
+            return pointFood();
+        }
+
+        matrix[row][cell].classList.add('food');
     }
 });
