@@ -23,6 +23,34 @@ td {
 }
 
 .btns {
-    
+    width: fit-content;
+
     background-color: red;
+}
+
+.food {
+    background-color: gold;
+}
+
+button[name="mU"] {
+    margin: 15px 0 20px 100px;
+}
+
+button[name="mL"] {
+    margin: 0 40px;
+}
+
+button[name="mD"] {
+    margin: 20px 0 40px 90px;
+}
+
+button[name="start"],
+button[name="restart"] {
+    margin: 0 15px 0 30px;
+}
+
+button {
+    width: 90px;
+
+    height: 40px;
 }

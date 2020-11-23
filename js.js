@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         numForSquare = 10,
         tRow = addRow(numForSquare),
         tCell,
-        [up, right, down, left, start, restart] = document.querySelectorAll('button'),
+        [up, left, right, down, start, restart] = document.querySelectorAll('button'),
         gameState = false,
         currentMove = moveRight,
         gameSpeed = 300;
@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             clearInterval(gameState);
+
+            gameState = false;
+
             currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
             currentMove = moveRight;
     });
