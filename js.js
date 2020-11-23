@@ -1,61 +1,135 @@
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', () => {
     let table = document.createElement('table'),
         playground = document.querySelector('.playground'),
-        tRow = addRow(),
+        numForSquare = 10,
+        tRow = addRow(numForSquare),
         tCell;
 
-        tRow.forEach((el)=>{ // заполнить <table> десятью <tr> 
-            tCell = addCell();
 
-            tCell.forEach((eltd)=>{   //заполнить <tr> десятью <td>
-                el.appendChild(eltd);
-            });
+    tRow.forEach((el) => { // заполнить <table> десятью <tr> 
+        tCell = addCell(numForSquare);
 
-            table.appendChild(el);
+        tCell.forEach((eltd) => { //заполнить <tr> десятью <td>
+            el.appendChild(eltd);
         });
 
-        playground.appendChild(table); //добавить <table> в игровое поле
+        table.appendChild(el);
+    });
 
-        let tableTd = document.querySelectorAll('td');
+    playground.appendChild(table); //добавить <table> в игровое поле
 
-        let matrix = makeMatrixArr();
+    let tableTd = document.querySelectorAll('td'),
+        matrix = makeMatrixArr(numForSquare),
+        tableTdArr = Array.from(tableTd); //формируем массив из псевдомассива
 
-        let tableTdArr = Array.from(tableTd); //формируем массив из псевдомассива
+
+
+    for (let out = 0; out < numForSquare; out++) { //извлекаем <td> из массива и заполняем матрицу
+        for (let inn = 0; inn < numForSquare; inn++) {
+            matrix[out][inn] = tableTdArr.shift();
+        }
+    }
+
+    const maxRow = matrix.length,
+        maxCell = matrix[0].length;
+
+    let currentPosition = startGame(Math.round(maxRow / 2), Math.round(maxCell / 2));
+
+    let test = setInterval(()=>{
+        currentPosition = moveRight(currentPosition);
+    }, 500);
+
+    
+
+    setTimeout(()=>{
+        clearInterval(test);
+    }, 4000);
+
+
+
+
+
+    function moveRight(current) {
+        let refresh = Object.assign({},current);
+
+        console.log('------------------');
+        console.log(refresh);
+
+
+        refresh.cellI++;
+
+        if (refresh.cellI > (maxCell-2)) {
+            refresh.cellI = -1;
+        }
         
-        for (let out = 0; out < 10; out++) {   //извлекаем <td> из массива и заполняем матрицу
-            for(let inn = 0; inn < 10; inn++) {
-                matrix[out][inn] = tableTdArr.shift();
-            }
-        } 
-
+           
+        
         
 
+        refresh.body.push(refresh.head);
 
+        refresh.head = refresh.nextEl;
+        refresh.head.classList.add('snakeHead');
 
+        refresh.nextEl = matrix[refresh.rowI][refresh.cellI+1];
 
-        
-    function addRow() {
+        console.log(refresh);
+        console.log('------------------');
+        return refresh;
+    }
+
+    function startGame(row = 5, cell = 5) {
+
+        cell = (cell < 2) ? 2 :
+            (cell > maxCell) ? maxCell - 2 :
+            cell;
+
+        row = (row < 0) ? 0 :
+            (row > maxRow) ? maxRow - 1 :
+            row;
+
+        let current = {
+            rowI: row,
+            cellI: cell,
+            nextEl: matrix[row][cell + 1],
+            head: matrix[row][cell],
+            body: [],
+        };
+
+        current.body.push(
+            matrix[row][cell - 2],
+            matrix[row][cell - 1],
+            );
+
+        current.body.forEach(el=>el.classList.add('snakeBody'));
+        current.head.classList.add('snakeHead');
+
+        return current;
+    }
+
+    // создает n строк
+    function addRow(numOfRows = 10) {
         let arr = [];
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < numOfRows; i++) {
             arr.push(document.createElement('tr'));
         }
 
         return arr;
-    } 
-        
-    function addCell() {
+    }
+    // создает n ячеек
+    function addCell(numOfCells = 10) {
         let arr = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < numOfCells; i++) {
             arr.push(document.createElement('td'));
         }
         return arr;
     }
-
-    function makeMatrixArr() {
+    // пустая матрица, стандартный размер = 10
+    function makeMatrixArr(innerArrs = 10) {
         let arr = [];
 
-        for(let i = 0; i < 10; i++) {
+        for (let i = 0; i < innerArrs; i++) {
             arr.push([]);
         }
 
