@@ -35,46 +35,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPosition = startGame(Math.round(maxRow / 2), Math.round(maxCell / 2));
 
-    let test = setInterval(()=>{
+
+    let testGame = setInterval(()=>{
         currentPosition = moveRight(currentPosition);
-    }, 500);
+    }, 100);
 
     
 
     setTimeout(()=>{
-        clearInterval(test);
-    }, 4000);
+        
+        clearInterval(testGame);
+
+        testGame = setInterval(()=>{
+            currentPosition = moveUp(currentPosition);
+        }, 100);
+    }, 1700);
+
+    setTimeout(()=>{
+        clearInterval(testGame);
+    }, 3200);
 
 
+    function moveUp(current) {
+        let refresh = Object.assign({},current);
+
+        
+
+        if (refresh.rowI < 0) {
+            refresh.rowI = -1;
+        }       
+        
+        refresh.body.push(refresh.head);
+        refresh.body[0].classList.remove('snakeBody');
+
+        refresh.body.shift();
+
+        refresh.body.forEach(el=>{
+            el.classList.add('snakeBody');
+            el.classList.remove('snakeHead');
+        });
+
+        refresh.nextEl = matrix[refresh.rowI-1][refresh.cellI];
+
+        refresh.head = refresh.nextEl;
+        refresh.head.classList.add('snakeHead');
 
 
+        refresh.rowI--;
+
+        return refresh;
+    }
 
     function moveRight(current) {
         let refresh = Object.assign({},current);
-
-        console.log('------------------');
-        console.log(refresh);
-
 
         refresh.cellI++;
 
         if (refresh.cellI > (maxCell-2)) {
             refresh.cellI = -1;
-        }
+        }       
         
-           
-        
-        
-
         refresh.body.push(refresh.head);
+        refresh.body[0].classList.remove('snakeBody');
+
+        refresh.body.shift();
+
+        refresh.body.forEach(el=>{
+            el.classList.add('snakeBody');
+            el.classList.remove('snakeHead');
+        });
 
         refresh.head = refresh.nextEl;
         refresh.head.classList.add('snakeHead');
 
         refresh.nextEl = matrix[refresh.rowI][refresh.cellI+1];
 
-        console.log(refresh);
-        console.log('------------------');
         return refresh;
     }
 
@@ -97,6 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         current.body.push(
+            matrix[row][cell - 4], //удалить
+
+            matrix[row][cell - 3], // удалить
+            
             matrix[row][cell - 2],
             matrix[row][cell - 1],
             );
