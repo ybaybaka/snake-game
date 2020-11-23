@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     let testGame = setInterval(()=>{
-        currentPosition = moveRight(currentPosition);
+        currentPosition = moveUp(currentPosition);
     }, 100);
 
     
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(testGame);
 
         testGame = setInterval(()=>{
-            currentPosition = moveDown(currentPosition);
+            currentPosition = moveLeft(currentPosition);
         }, 100);
     }, 1700);
 
@@ -55,12 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(testGame);
     }, 3200);
 
+    function moveLeft(current) {
+        let refresh = Object.assign({},current);
+
+        
+
+        if (refresh.cellI < 1) {
+            refresh.cellI = maxCell;
+        }       
+        
+        refresh.body.push(refresh.head);
+        refresh.body[0].classList.remove('snakeBody');
+
+        refresh.body.shift();
+
+        refresh.body.forEach(el=>{
+            el.classList.add('snakeBody');
+            el.classList.remove('snakeHead');
+        });
+
+        refresh.nextEl = matrix[refresh.rowI][refresh.cellI-1];
+
+        refresh.head = refresh.nextEl;
+        refresh.head.classList.add('snakeHead');
+
+        refresh.cellI--;
+
+        return refresh;
+    }
 
     function moveDown(current) {
         let refresh = Object.assign({},current);
        
-        
-
         if (refresh.rowI > maxRow - 2) {
             refresh.rowI = -1;
         }       
@@ -118,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function moveRight(current) {
         let refresh = Object.assign({},current);
 
-        refresh.cellI++;
+        
 
         if (refresh.cellI > (maxCell-2)) {
             refresh.cellI = -1;
@@ -138,6 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         refresh.head.classList.add('snakeHead');
 
         refresh.nextEl = matrix[refresh.rowI][refresh.cellI+1];
+
+        refresh.cellI++;
 
         return refresh;
     }
