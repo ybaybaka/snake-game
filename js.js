@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
         playground = document.querySelector('.playground'),
         numForSquare = 10,
         tRow = addRow(numForSquare),
-        tCell;
+        tCell,
+        [up, right, down, left, start, restart] = document.querySelectorAll('button'),
+        gameState,
+        currentMove = moveRight;
 
 
     tRow.forEach((el) => { // заполнить <table> десятью <tr> 
@@ -33,48 +36,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxRow = matrix.length,
         maxCell = matrix[0].length;
 
-    let currentPosition = startGame(Math.round(maxRow / 2), Math.round(maxCell / 2));
+    let currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
 
+    start.addEventListener('click', () => {
+        gameState = setInterval(() => {
+            currentPosition = currentMove(currentPosition);
+        }, 500);
+    });
 
-    let testGame = setInterval(()=>{
-        currentPosition = moveUp(currentPosition);
-    }, 100);
+    restart.addEventListener('click', () => {
 
-    
+        tableTd.forEach(el=>{
+            el.classList.remove('snakeBody', 'snakeHead');
+        });
+        clearInterval(gameState);
+        currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
+        currentMove = moveRight;
+    });
 
-    setTimeout(()=>{
-        
-        clearInterval(testGame);
+    up.addEventListener('click', () => {
 
-        testGame = setInterval(()=>{
-            currentPosition = moveLeft(currentPosition);
-        }, 100);
-    }, 1700);
+        if (currentMove != moveDown) {
+            currentMove = moveUp;
+        }
+    });
 
-    setTimeout(()=>{
-        clearInterval(testGame);
-    }, 3200);
+    right.addEventListener('click', () => {
+        if (currentMove != moveLeft) {
+            currentMove = moveRight;
+        }
+    });
+
+    down.addEventListener('click', () => {
+
+        if (currentMove != moveUp) {
+            currentMove = moveDown;
+        }
+    });
+
+    left.addEventListener('click', () => {
+        if (currentMove != moveRight) {
+            currentMove = moveLeft;
+        }
+    });
 
     function moveLeft(current) {
-        let refresh = Object.assign({},current);
-
-        
+        let refresh = Object.assign({}, current);
 
         if (refresh.cellI < 1) {
             refresh.cellI = maxCell;
-        }       
-        
+        }
+
         refresh.body.push(refresh.head);
         refresh.body[0].classList.remove('snakeBody');
 
         refresh.body.shift();
 
-        refresh.body.forEach(el=>{
+        refresh.body.forEach(el => {
             el.classList.add('snakeBody');
             el.classList.remove('snakeHead');
         });
 
-        refresh.nextEl = matrix[refresh.rowI][refresh.cellI-1];
+        refresh.nextEl = matrix[refresh.rowI][refresh.cellI - 1];
 
         refresh.head = refresh.nextEl;
         refresh.head.classList.add('snakeHead');
@@ -85,23 +108,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function moveDown(current) {
-        let refresh = Object.assign({},current);
-       
+        let refresh = Object.assign({}, current);
+
         if (refresh.rowI > maxRow - 2) {
             refresh.rowI = -1;
-        }       
-        
+        }
+
         refresh.body.push(refresh.head);
         refresh.body[0].classList.remove('snakeBody');
 
         refresh.body.shift();
 
-        refresh.body.forEach(el=>{
+        refresh.body.forEach(el => {
             el.classList.add('snakeBody');
             el.classList.remove('snakeHead');
         });
 
-        refresh.nextEl = matrix[refresh.rowI+1][refresh.cellI];
+        refresh.nextEl = matrix[refresh.rowI + 1][refresh.cellI];
 
         refresh.head = refresh.nextEl;
         refresh.head.classList.add('snakeHead');
@@ -112,25 +135,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function moveUp(current) {
-        let refresh = Object.assign({},current);
+        let refresh = Object.assign({}, current);
 
-        
+
 
         if (refresh.rowI < 1) {
             refresh.rowI = maxRow;
-        }       
-        
+        }
+
         refresh.body.push(refresh.head);
         refresh.body[0].classList.remove('snakeBody');
 
         refresh.body.shift();
 
-        refresh.body.forEach(el=>{
+        refresh.body.forEach(el => {
             el.classList.add('snakeBody');
             el.classList.remove('snakeHead');
         });
 
-        refresh.nextEl = matrix[refresh.rowI-1][refresh.cellI];
+        refresh.nextEl = matrix[refresh.rowI - 1][refresh.cellI];
 
         refresh.head = refresh.nextEl;
         refresh.head.classList.add('snakeHead');
@@ -142,35 +165,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function moveRight(current) {
-        let refresh = Object.assign({},current);
+        let refresh = Object.assign({}, current);
 
-        
-
-        if (refresh.cellI > (maxCell-2)) {
+        if (refresh.cellI > (maxCell - 2)) {
             refresh.cellI = -1;
-        }       
-        
+        }
+
         refresh.body.push(refresh.head);
         refresh.body[0].classList.remove('snakeBody');
 
         refresh.body.shift();
 
-        refresh.body.forEach(el=>{
+        refresh.body.forEach(el => {
             el.classList.add('snakeBody');
             el.classList.remove('snakeHead');
         });
 
+        refresh.nextEl = matrix[refresh.rowI][refresh.cellI + 1];
+
         refresh.head = refresh.nextEl;
         refresh.head.classList.add('snakeHead');
-
-        refresh.nextEl = matrix[refresh.rowI][refresh.cellI+1];
 
         refresh.cellI++;
 
         return refresh;
     }
 
-    function startGame(row = 5, cell = 5) {
+    function pointSnake(row = 5, cell = 5) {
 
         cell = (cell < 2) ? 2 :
             (cell > maxCell) ? maxCell - 2 :
@@ -192,13 +213,15 @@ document.addEventListener('DOMContentLoaded', () => {
             matrix[row][cell - 4], //удалить
 
             matrix[row][cell - 3], // удалить
-            
+
             matrix[row][cell - 2],
             matrix[row][cell - 1],
-            );
+        );
 
-        current.body.forEach(el=>el.classList.add('snakeBody'));
+        current.body.forEach(el => el.classList.add('snakeBody'));
         current.head.classList.add('snakeHead');
+
+
 
         return current;
     }
