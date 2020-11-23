@@ -1,9 +1,7 @@
 .playground {
-    
-
-    height: 100%;
-
     margin: auto;
+
+    display: block;
 }
 
 td {
@@ -22,4 +20,9 @@ td {
 
 .snakeBody {
     background-color: darkgreen;
+}
+
+.btns {
+    
+    background-color: red;
 }
