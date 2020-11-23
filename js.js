@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let table = document.createElement('table'),
         playground = document.querySelector('.playground'),
-        numForSquare = 20,
+        numForSquare = 10,
         tRow = addRow(numForSquare),
         tCell,
         [up, right, down, left, start, restart] = document.querySelectorAll('button'),
-        gameState,
+        gameState = false,
         currentMove = moveRight,
         gameSpeed = 300;
 
@@ -43,42 +43,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxRow = matrix.length,
         maxCell = matrix[0].length;
 
-    let currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2),135126);
+    let currentPosition = pointSnake();
 
     start.addEventListener('click', () => {
-        gameState = setInterval(() => {
 
-            if (endGame()) {
-                clearInterval(gameState);
-            }
+        if (!gameState) {
+            gameState = setInterval(() => {
 
-            else {
-                if (currentPosition.nextEl.classList.contains(FOOD)) {
+                if (endGame()) {
+                    clearInterval(gameState);
+                    gameState = false;
+                } else {
+                    if (currentPosition.nextEl.classList.contains(FOOD)) {
 
-                    currentPosition.nextEl.classList.remove(FOOD);
-    
-                    currentPosition.body.push(currentPosition.nextEl);
-    
-                    pointFood();
+                        currentPosition.nextEl.classList.remove(FOOD);
+
+                        currentPosition.body.push(currentPosition.nextEl);
+
+                        pointFood();
+                    }
+
+                    currentPosition = currentMove(currentPosition);
                 }
-    
-                currentPosition = currentMove(currentPosition);
-            }
 
-        }, gameSpeed);
-        
-        pointFood();
+            }, gameSpeed);
+        }
+
     });
 
     restart.addEventListener('click', () => {
 
-        tableTd.forEach(el => {
-            el.classList.remove(BODY, HEAD);
-        });
+            tableTd.forEach(el => {
+                el.classList.remove(BODY, HEAD, FOOD);
+            });
 
-        clearInterval(gameState);
-        currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
-        currentMove = moveRight;
+            clearInterval(gameState);
+            currentPosition = pointSnake(Math.round(maxRow / 2), Math.round(maxCell / 2));
+            currentMove = moveRight;
     });
 
     up.addEventListener('click', () => {
@@ -223,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // нарисовать змейку
-    function pointSnake(row = 5, cell = 5, count = 3) {
+    function pointSnake(row = Math.round(maxRow / 2), cell = Math.round(maxCell / 2), count = 3) {
 
         cell = (cell < 2) ? 2 :
             (cell > maxCell) ? maxCell - 2 :
@@ -242,13 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
 
-        if (count > Math.ceil(maxCell/2)) {
-            count = Math.ceil((maxCell/2)-1);
+        if (count > Math.ceil(maxCell / 2)) {
+            count = Math.ceil((maxCell / 2) - 1);
         }
 
         do {
-            for(let i = 1; i <= count; i++) {
-                current.body.unshift(matrix[row][cell-i]);
+            for (let i = 1; i <= count; i++) {
+                current.body.unshift(matrix[row][cell - i]);
             }
         } while (false);
 
@@ -265,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         current.body.forEach(el => el.classList.add(BODY));
         current.head.classList.add(HEAD);
 
-
+        pointFood();
 
         return current;
     }
