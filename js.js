@@ -85,13 +85,30 @@ document.addEventListener('DOMContentLoaded', () => {
             currentMove = moveRight;
     });
 
-    up.addEventListener('click', () => {
+    // control block, html buttons and arrow keys
+    window.addEventListener('keyup',(e)=>{
 
+        if (currentMove != moveDown && (e.key == 'ArrowUp') ) {
+            currentMove = moveUp;
+        }
+        if (currentMove != moveLeft && (e.key == 'ArrowRight')) {
+            currentMove = moveRight;
+        }
+        if (currentMove != moveUp && (e.key == 'ArrowDown')) {
+            currentMove = moveDown;
+        }
+        if (currentMove != moveRight && (e.key == 'ArrowLeft')) {
+            currentMove = moveLeft;
+        }
+    });
+    
+    up.addEventListener('click', () => {
+        
         if (currentMove != moveDown) {
             currentMove = moveUp;
         }
     });
-
+    
     right.addEventListener('click', () => {
         if (currentMove != moveLeft) {
             currentMove = moveRight;
@@ -325,4 +342,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return false;
     }
+
 });
